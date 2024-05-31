@@ -1,0 +1,72 @@
+package edu.pnu;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class DriverStatementQuery {
+	static String driver = "com.mysql.cj.jdbc.Driver";
+	static String url = "jdbc:mysql://localhost:3306/world";
+	static String username = "scott";
+	static String password = "tiger";
+	
+	public static void main(String[] args) {
+			
+		Scanner sc = new Scanner(System.in);
+		while(true) {
+			System.out.println("=".repeat(80));
+			System.out.println(">>Select[0:Exit]");
+			System.out.println("[1].SELECT Id, Name, CountryCode, District, Population FROM city LIMIT 10");
+			System.out.println("[2].SELECT * FROM country");
+			System.out.println("3.SELECT * FROM city");
+			System.out.println("4.SELECT * FROM countrylanguage");
+			int sel = sc.nextInt();
+			System.out.println("=".repeat(80));
+			if(sel == 0) break;
+			switch(sel) {
+			case 1: citytest(); break;
+			case 2: countrytest(); break;
+			default:
+				System.out.println("1 or 2");
+			}
+		}
+	
+	}
+
+	private static void countrytest() {
+		
+		Connection con = null;
+		try {
+			Class.forName(driver);
+			System.out.println("로딩 성공");
+			
+			con = DriverManager.getConnection(url, username, password);
+			System.out.println("연결 성공");
+			
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT Id, Name, CountryCode, District, Population FROM city LIMIT 10");
+			
+			while(rs.next()) {
+				System.out.print(rs.getString("Id") + ",");
+				System.out.print(rs.getString("Name") + ",");
+				System.out.print(rs.getString("CountryCode") + ",");
+				System.out.print(rs.getString("District") + ",");
+				System.out.print(rs.getString("Population") + "\n");
+			}
+			
+			rs.close();
+			st.close();
+			con.close();
+
+		} catch (Exception e) {
+			System.out.println("연결 실패 : " + e.getMessage());
+		}		
+	}
+
+	private static void citytest() {
+		
+	}
+
+}

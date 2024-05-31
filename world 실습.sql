@@ -33,9 +33,6 @@
 -- 방법 1*******실패
 SELECT cl.Language, cl.IsOfficial, cl.Percentage
 FROM countrylanguage cl
-WHERE EXISTS(
-	SELECT
-);
 
 -- 방법 2
 -- SELECT cl.Language, cl.IsOfficial, cl.Percentage

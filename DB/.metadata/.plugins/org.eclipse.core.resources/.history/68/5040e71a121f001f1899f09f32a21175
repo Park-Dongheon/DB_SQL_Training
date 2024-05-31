@@ -1,0 +1,17 @@
+package edu.pnu;
+
+public class DriverLoading {
+	
+	public static void main(String[] args) throws ClassNotFoundException {
+		
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		
+		System.out.println("로딩 성공");
+		
+		Connection con = DriverManager.getConnection(“jdbc:mysql://localhost:3306/DBNAME“, “scott”, “tiger”);
+			
+		System.out.println("연결 성공");
+
+	}
+
+}
