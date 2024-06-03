@@ -79,9 +79,9 @@ public class InsertSQL {
 		System.out.println("name:");	String name = sc.next();
 		String sql = "UPDATE member SET pass=?, name=? WHERE id=?";
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
-			psmt.setString(1, pass);
-			psmt.setString(2, name);
-			psmt.setInt(3, id);
+			psmt.setInt(1, id);
+			psmt.setString(2, pass);
+			psmt.setString(3, name);
 			return psmt.executeUpdate();
 		}
 	}
@@ -90,8 +90,7 @@ public class InsertSQL {
     private static int deleteMember(Connection con, Scanner sc) throws SQLException {
     	System.out.println("Delete Data");
     	System.out.println("id:");		int id = sc.nextInt();
-    	String sql = "DELETE FROM member WHERE id=?";
-    	try(PreparedStatement psmt = con.prepareStatement(sql)) {
+    	try(PreparedStatement psmt = con.prepareStatement("DELETE FROM member WHERE id=?")) {
     		psmt.setInt(1, id);
     		return psmt.executeUpdate();
     	}
@@ -105,7 +104,7 @@ public class InsertSQL {
 			
 			boolean flag = true;
 			while(flag) {
-				System.out.println("[I]nsert/[U]pdate/[D]elete/[E]xit");		// 사용자에게 [I]nsert, [U]pdate, [D]elete, [E]xit 옵션을 제공
+				System.out.println("[I]nsert/[U]pdate/[D]elete");		// 사용자에게 [I]nsert, [U]pdate, [D]elete 옵션을 제공
 				String choice = sc.next().toLowerCase();
 				switch(choice) {		// 각 옵션에 따라 insertMember, updateMember, deleteMember 메서드를 호출
 				case "i": insertMember(con, sc); break;
@@ -125,9 +124,7 @@ public class InsertSQL {
 				}		
 			}
 			
-		} catch (ClassNotFoundException e) {
-			System.out.println("JDBC 드라이버를 찾을 수 없습니다: " + e.getMessage());
-		} catch (SQLException e) {		// 예외 처리
+		}catch (Exception e) {		// 예외 처리
 			System.out.println("연결 실패 : " + e.getMessage());
 		}
 	}
