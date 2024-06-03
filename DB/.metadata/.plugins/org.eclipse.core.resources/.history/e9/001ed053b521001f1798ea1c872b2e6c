@@ -33,10 +33,10 @@ class Member {
 }
 
 public class InsertSQL {
-	private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+	private static final String driver = "com.mysql.cj.jdbc.Driver";
 	private static final String URL = "jdbc:mysql://localhost:3306/musthave";
-	private static final String USER = "scott";
-	private static final String PASSWORD = "tiger";
+	private static final String User = "scott";
+	private static final String Password = "tiger";
 	
 	// SELECT 쿼리를 수행하여 결과를 반환하는 메서드
 	private static ResultSet selectMember(Connection con) throws SQLException {
@@ -63,8 +63,8 @@ public class InsertSQL {
 	private static int insertMember(Connection con, Scanner sc) throws SQLException {
 		System.out.println("Insert Data");
 		int id = getNextId(con);
-		System.out.print("pass:");		String pass = sc.next();
-		System.out.print("name:");		String name = sc.next();
+		System.out.println("pass:");	String pass = sc.next();
+		System.out.println("name:");	String name = sc.next();
 		String sql = "INSERT INTO member(id, pass, name) VALUES(?, ?, ?)";
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
 			psmt.setInt(1, id);
@@ -78,8 +78,8 @@ public class InsertSQL {
 	private static int updateMember(Connection con, Scanner sc) throws SQLException {
 		System.out.println("Update Data");
 		System.out.print("id:");		int id = sc.nextInt();
-		System.out.print("pass:");		String pass = sc.next();
-		System.out.print("name:");		String name = sc.next();
+		System.out.println("pass:");	String pass = sc.next();
+		System.out.println("name:");	String name = sc.next();
 		String sql = "UPDATE member SET pass=?, name=? WHERE id=?";
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
 			psmt.setString(1, pass);
@@ -92,7 +92,7 @@ public class InsertSQL {
 	// 회원 정보를 삭제하는 메서드
     private static int deleteMember(Connection con, Scanner sc) throws SQLException {
     	System.out.println("Delete Data");
-    	System.out.print("id:");		int id = sc.nextInt();
+    	System.out.println("id:");		int id = sc.nextInt();
     	String sql = "DELETE FROM member WHERE id=?";
     	try(PreparedStatement psmt = con.prepareStatement(sql)) {
     		psmt.setInt(1, id);
@@ -103,7 +103,7 @@ public class InsertSQL {
 
 	public static void main(String[] args) {
 		try(Scanner sc = new Scanner(System.in)){
-			Class.forName(DRIVER);		// JDBC 드라이버를 로드하고 데이터베이스에 연결
+			Class.forName(driver);		// JDBC 드라이버를 로드하고 데이터베이스에 연결
 			
 			try(Connection con = DriverManager.getConnection(URL, USER, PASSWORD)) {
 				boolean flag = true;
