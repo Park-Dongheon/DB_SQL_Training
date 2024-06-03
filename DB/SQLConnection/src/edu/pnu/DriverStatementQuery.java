@@ -43,10 +43,10 @@ public class DriverStatementQuery {
 				case 1: query1(st); break;
 				case 2: query2(st); break;
 				case 3: query3(st); break;
-//				case 4: query4(); break;
-//				case 5: query5(); break;
-//				case 6: query6(); break;
-//				case 7: query7(); break;
+				case 4: query4(st); break;
+				case 5: query5(st); break;
+				case 6: query6(st); break;
+				case 7: query7(st); break;
 				default:		  break;
 				}
 			}
@@ -86,68 +86,17 @@ public class DriverStatementQuery {
 	private static void query3(Statement st) throws SQLException {
 		printResultSet(st.executeQuery("SELECT c.Name, ct.Name FROM country c, city ct WHERE c.Name = 'United States' AND c.Code = ct.CountryCode"));
 	}
-	
+	private static void query4(Statement st) throws SQLException {
+		printResultSet(st.executeQuery("SELECT c.Code, c.Name, cl.Language FROM country c, countrylanguage cl WHERE c.Name = 'China' AND c.Code = cl.CountryCode"));
+	}
+	private static void query5(Statement st) throws SQLException {
+		printResultSet(st.executeQuery("SELECT Code, Name FROM country WHERE Continent = 'Europe' AND Population >= 1000000"));
+	}
+	private static void query6(Statement st) throws SQLException {
+		printResultSet(st.executeQuery("SELECT Code, Name, IndepYear FROM country WHERE IndepYear > 1900"));
+	}
+	private static void query7(Statement st) throws SQLException {
+		printResultSet(st.executeQuery("SELECT c.Name, cl.Language, cl.IsOfficial FROM CountryLanguage cl, country c WHERE cl.Language = 'English' AND cl.IsOfficial = 'F' AND cl.CountryCode = c.Code AND c.GNP > 1000"));
+	}
+
 }
-	
-
-
-	
-	
-	
-
-//	private static void citytest() {
-//		Connection con = null;
-//		try {
-//			Class.forName(driver);
-//			System.out.println("로딩 성공");
-//			
-//			con = DriverManager.getConnection(url, username, password);
-//			System.out.println("연결 성공");
-//			
-//			Statement st = con.createStatement();
-//			ResultSet rs = st.executeQuery("SELECT Id, Name, CountryCode, District, Population FROM city LIMIT 10");
-//			
-//			while(rs.next()) {
-//				System.out.print(rs.getString("Id") + ",");
-//				System.out.print(rs.getString("Name") + ",");
-//				System.out.print(rs.getString("CountryCode") + ",");
-//				System.out.print(rs.getString("District") + ",");
-//				System.out.print(rs.getString("Population") + "\n");
-//			}
-//			
-//			rs.close();
-//			st.close();
-//			con.close();
-//
-//		} catch (Exception e) {
-//			System.out.println("연결 실패 : " + e.getMessage());
-//		}		
-//	}
-//	
-//	private static void countrytest() {
-//		
-//		Connection con = null;
-//		try {
-//			Class.forName(driver);
-//			System.out.println("로딩 성공");
-//			
-//			con = DriverManager.getConnection(url, username, password);
-//			System.out.println("연결 성공");
-//			
-//			Statement st = con.createStatement();
-//			ResultSet rs = st.executeQuery("SELECT * FROM country");
-//			
-//			while(rs.next()) {
-//				for(int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-//					System.out.print(rs.getString(i) + ",");					
-//				}
-//				System.out.println();
-//			}
-//			rs.close();
-//			st.close();
-//			con.close();
-//			
-//		} catch (Exception e) {
-//			System.out.println("연결 실패 : " + e.getMessage());
-//		}		
-//	}

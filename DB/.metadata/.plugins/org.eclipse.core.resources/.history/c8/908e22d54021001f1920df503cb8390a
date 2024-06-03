@@ -1,0 +1,9 @@
+package edu.pnu;
+
+public class QueryByPreparedStatement {
+
+	public static void main(String[] args) {
+
+	}
+
+}
