@@ -7,12 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-class User {
+class Member {
 	private int id;
 	private String pass;
 	private String name;
 	
-	public User(int id, String pass, String name) {
+	public Member(int id, String pass, String name) {
 		this.id = id;
 		this.pass = pass;
 		this.name = name;
@@ -33,10 +33,7 @@ class User {
 }
 
 public class InsertSQL {
-	private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/musthave";
-	private static final String USER = "scott";
-	private static final String PASSWORD = "tiger";
+	private static String driver = "com.mysql.cj.jdbc.Driver";
 	
 	// SELECT 쿼리를 수행하여 결과를 반환하는 메서드
 	private static ResultSet selectMember(Connection con) throws SQLException {
@@ -46,10 +43,7 @@ public class InsertSQL {
 		}
 	}
 	
-<<<<<<< HEAD
-=======
 	// 다음 ID 값을 반환하는 메서드
->>>>>>> 0ece37139aeba08882f2416a116482663b141aef
 	private static int getNextId(Connection con) throws SQLException {
 		String sql = "SELECT MAX(id) FROM member";
 		try(PreparedStatement selMaxIdPs = con.prepareStatement(sql);
@@ -66,8 +60,8 @@ public class InsertSQL {
 	private static int insertMember(Connection con, Scanner sc) throws SQLException {
 		System.out.println("Insert Data");
 		int id = getNextId(con);
-		System.out.print("pass:");		String pass = sc.next();
-		System.out.print("name:");		String name = sc.next();
+		System.out.println("pass:");	String pass = sc.next();
+		System.out.println("name:");	String name = sc.next();
 		String sql = "INSERT INTO member(id, pass, name) VALUES(?, ?, ?)";
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
 			psmt.setInt(1, id);
@@ -81,8 +75,8 @@ public class InsertSQL {
 	private static int updateMember(Connection con, Scanner sc) throws SQLException {
 		System.out.println("Update Data");
 		System.out.print("id:");		int id = sc.nextInt();
-		System.out.print("pass:");		String pass = sc.next();
-		System.out.print("name:");		String name = sc.next();
+		System.out.println("pass:");	String pass = sc.next();
+		System.out.println("name:");	String name = sc.next();
 		String sql = "UPDATE member SET pass=?, name=? WHERE id=?";
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
 			psmt.setString(1, pass);
@@ -95,7 +89,7 @@ public class InsertSQL {
 	// 회원 정보를 삭제하는 메서드
     private static int deleteMember(Connection con, Scanner sc) throws SQLException {
     	System.out.println("Delete Data");
-    	System.out.print("id:");		int id = sc.nextInt();
+    	System.out.println("id:");		int id = sc.nextInt();
     	String sql = "DELETE FROM member WHERE id=?";
     	try(PreparedStatement psmt = con.prepareStatement(sql)) {
     		psmt.setInt(1, id);
@@ -105,42 +99,35 @@ public class InsertSQL {
     
 
 	public static void main(String[] args) {
-		try(Scanner sc = new Scanner(System.in)){
-			Class.forName(DRIVER);		// JDBC 드라이버를 로드하고 데이터베이스에 연결
+		try(Scanner sc = new Scanner(System.in);
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/musthave", "scott", "tiger")) {
+			Class.forName(driver);		// JDBC 드라이버를 로드하고 데이터베이스에 연결
 			
-			try(Connection con = DriverManager.getConnection(URL, USER, PASSWORD)) {
-				boolean flag = true;
-				while(flag) {
-					System.out.println("[I]nsert/[U]pdate/[D]elete/[E]xit");		// 사용자에게 [I]nsert, [U]pdate, [D]elete, [E]xit 옵션을 제공
-					String choice = sc.next().toLowerCase();
-					switch(choice) {		// 각 옵션에 따라 insertMember, updateMember, deleteMember 메서드를 호출
-					case "i": insertMember(con, sc); break;
-					case "u": updateMember(con, sc); break;
-					case "d": deleteMember(con, sc); break;
-					case "e": flag = false; break;
-					default: System.out.println("Invalid choice. Please choose again."); break;
-					}
-				}	
-			
-				// 회원 정보를 조회 출력
-				try (ResultSet rs = selectMember(con)) {
-					while (rs.next()) {
-						System.out.print(rs.getInt("id") + ", ");
-						System.out.print(rs.getString("pass") + ", ");
-						System.out.print(rs.getString("name") + "\n");
-					}		
+			boolean flag = true;
+			while(flag) {
+				System.out.println("[I]nsert/[U]pdate/[D]elete/[E]xit");		// 사용자에게 [I]nsert, [U]pdate, [D]elete, [E]xit 옵션을 제공
+				String choice = sc.next().toLowerCase();
+				switch(choice) {		// 각 옵션에 따라 insertMember, updateMember, deleteMember 메서드를 호출
+				case "i": insertMember(con, sc); break;
+				case "u": updateMember(con, sc); break;
+				case "d": deleteMember(con, sc); break;
+				case "e": flag = false; break;
+				default: System.out.println("Invalid choice. Please choose again."); break;
 				}
-			} catch (SQLException e) {
-				System.out.println("연결 실패 : " + e.getMessage());				
+			}	
+			
+			// 회원 정보를 조회 출력
+			try (ResultSet rs = selectMember(con)) {
+				while (rs.next()) {
+					System.out.print(rs.getInt("id") + ", ");
+					System.out.print(rs.getString("pass") + ", ");
+					System.out.print(rs.getString("name") + "\n");
+				}		
 			}
-<<<<<<< HEAD
 			
 		}catch (Exception e) {		// 예외 처리
-			System.out.println("로딩 실패 : " + e.getMessage());
-=======
-		} catch (ClassNotFoundException e) {		// 예외 처리
-			System.out.println("JDBC 드라이버를 찾을 수 없습니다: " + e.getMessage());
->>>>>>> 0ece37139aeba08882f2416a116482663b141aef
+			System.out.println("연결 실패 : " + e.getMessage());
 		}
-	}	
+	}
+
 }
