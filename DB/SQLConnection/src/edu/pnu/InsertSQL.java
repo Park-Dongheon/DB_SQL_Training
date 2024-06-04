@@ -46,10 +46,7 @@ public class InsertSQL {
 		}
 	}
 	
-<<<<<<< HEAD
-=======
 	// 다음 ID 값을 반환하는 메서드
->>>>>>> 0ece37139aeba08882f2416a116482663b141aef
 	private static int getNextId(Connection con) throws SQLException {
 		String sql = "SELECT MAX(id) FROM member";
 		try(PreparedStatement selMaxIdPs = con.prepareStatement(sql);
@@ -133,14 +130,9 @@ public class InsertSQL {
 			} catch (SQLException e) {
 				System.out.println("연결 실패 : " + e.getMessage());				
 			}
-<<<<<<< HEAD
 			
 		}catch (Exception e) {		// 예외 처리
 			System.out.println("로딩 실패 : " + e.getMessage());
-=======
-		} catch (ClassNotFoundException e) {		// 예외 처리
-			System.out.println("JDBC 드라이버를 찾을 수 없습니다: " + e.getMessage());
->>>>>>> 0ece37139aeba08882f2416a116482663b141aef
 		}
 	}	
 }

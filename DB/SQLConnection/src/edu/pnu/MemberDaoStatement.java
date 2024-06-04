@@ -2,6 +2,7 @@ package edu.pnu;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -10,9 +11,9 @@ import java.util.Scanner;
 
 abstract class MemberDao {
 	
-	private static String URL = "jdbc:mysql://localhost:3306/musthave";
-	private static String USER = "scott";
-	private static String PASS = "tiger";
+	private static final String URL = "jdbc:mysql://localhost:3306/musthave";
+	private static final String USER = "scott";
+	private static final String PASS = "tiger";
 	
 	
 	public abstract void insertMember(Connection con) throws SQLException;
@@ -23,70 +24,81 @@ abstract class MemberDao {
 	public static String getURL() {
 		return URL;
 	}
-	public static void setURL(String uRL) {
-		URL = uRL;
-	}
+
 	public static String getUSER() {
 		return USER;
 	}
-	public static void setUSER(String uSER) {
-		USER = uSER;
-	}
+
 	public static String getPASS() {
 		return PASS;
 	}
-	public static void setPASS(String pASS) {
-		PASS = pASS;
-	}
-	
-	
+
 }
 
 public class MemberDaoStatement extends MemberDao{
 	
-	private static Scanner sc = new Scanner(System.in);
+	private static final Scanner sc = new Scanner(System.in);
+	private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	
-	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
-	
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		MemberDaoStatement dao = new MemberDaoStatement();
 		
-		try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
-			
+		try { 
 			Class.forName(DRIVER);
-			
-			boolean flag = true;
-			while(flag) {
-				System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
-				String s = sc.next().toUpperCase();
-				switch(s) {
-				case "I": dao.insertMember(con);		break;
-				case "U": dao.updateMember(con);		break;
-				case "D": dao.deleteMember(con);		break;
-				case "S": dao.selectMember(con);		break;
-				case "X": flag = false;					break;
+			try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
+				
+				
+				boolean flag = true;
+				while(flag) {
+					System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
+					String s = sc.next().toUpperCase();
+					switch(s) {
+					case "I": dao.insertMember(con);		break;
+					case "U": dao.updateMember(con);		break;
+					case "D": dao.deleteMember(con);		break;
+					case "S": dao.selectMember(con);		break;
+					case "X": flag = false;					break;
+					}
 				}
+				System.out.println("Bye~");
+				
+			} catch (Exception e) {
+				System.out.println("데이터베이스 연결 실패 : " + e.getMessage());
 			}
-			System.out.println("Bye~");
-			
-		} catch (Exception e) {
-			System.out.println("로딩 실패 : " + e.getMessage());
+		}finally {
+			sc.close();
 		}
 	}
 
+	// 다음 ID 값을 반환하는 메서드, 테이블이 empty인 경우 ID를 1로 초기화
+	private static int getNextId(Connection con) throws SQLException {
+		String sql = "SELECT MAX(id) FROM member";
+		try(Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(sql)) {
+			if(rs.next() ) {
+				return rs.getInt(1) + 1;		// 최대 ID값에 1을 더한 값을 반환
+			} else {
+				return 1;		// 만약 테이블에 회원이 없는 경우, ID는 1부터 시작한다고 가정
+			}
+		}
+	}
+	
+	// 회원 정보를 삽입하는 메서드
 	@Override
 	public void insertMember(Connection con) throws SQLException {
 		System.out.println("Insert Member");
-		String sql = "INSERT INTO member(pass, name) VALUES ('%s', '%s')";
+		String sql = "INSERT INTO member(id, pass, name) VALUES (%d, '%s', '%s')";
+		int id = getNextId(con);
 		System.out.print("pass:");		String pass = sc.next();
 		System.out.print("name:");		String name = sc.next();
-		String formatString = String.format(sql, pass, name);
+		String formatString = String.format(sql, id, pass, name);
 		try(Statement stmt = con.createStatement()) {
 			int rowsInsert = stmt.executeUpdate(formatString);
 			System.out.println(rowsInsert + " Row(s) Inserted.");
 		}
 	}
 
+	// 회원 정보를 업데이트하는 메서드
 	@Override
 	public void updateMember(Connection con) throws SQLException {
 		System.out.println("Update Data");
@@ -101,6 +113,7 @@ public class MemberDaoStatement extends MemberDao{
 		}
 	}
 
+	// 회원 정보를 삭제하는 메서드
 	@Override
 	public void deleteMember(Connection con) throws SQLException {
 		System.out.println("Delete Data");
@@ -113,6 +126,7 @@ public class MemberDaoStatement extends MemberDao{
 		}
 	}
 
+	// 회원 정보를 조회 출력
 	@Override
 	public void selectMember(Connection con) throws SQLException {
 		System.out.println("Select Data");

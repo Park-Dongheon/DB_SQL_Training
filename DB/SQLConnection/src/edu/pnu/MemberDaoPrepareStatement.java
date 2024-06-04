@@ -11,50 +11,70 @@ import java.util.Scanner;
 
 public class MemberDaoPrepareStatement extends MemberDao {
 	
-	private static Scanner sc = new Scanner(System.in);
+	private static final Scanner sc = new Scanner(System.in);
+	private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	
-	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
-	
-	public static void main(String[] args) throws SQLException {
-		MemberDaoStatement dao = new MemberDaoStatement();
+	public static void main(String[] args) throws SQLException, ClassNotFoundException {	// 예외 처리 throws 처리
+		MemberDaoPrepareStatement dao = new MemberDaoPrepareStatement();
 		
-		try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
-			
+		try {
 			Class.forName(DRIVER);
-			
-			boolean flag = true;
-			while(flag) {
-				System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
-				String s = sc.next().toUpperCase();
-				switch(s) {
-				case "I": dao.insertMember(con);		break;
-				case "U": dao.updateMember(con);		break;
-				case "D": dao.deleteMember(con);		break;
-				case "S": dao.selectMember(con);		break;
-				case "X": flag = false;					break;
+			try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
+				
+				boolean flag = true;
+				while(flag) {
+					System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
+					String s = sc.next().toUpperCase();
+					switch(s) {
+					case "I": dao.insertMember(con);		break;
+					case "U": dao.updateMember(con);		break;
+					case "D": dao.deleteMember(con);		break;
+					case "S": dao.selectMember(con);		break;
+					case "X": flag = false;					break;
+					default: System.out.println("Invalid Option. 다시 입력하세요.");
+					}
 				}
+				System.out.println("Bye~");
+				
+			} catch (Exception e) {
+				System.out.println("데이터베이스 연결 실패 : " + e.getMessage());
 			}
-			System.out.println("Bye~");
-			
-		} catch (Exception e) {
-			System.out.println("로딩 실패 : " + e.getMessage());
+		}finally {
+			sc.close();
 		}
 	}
 
+	// 다음 ID 값을 반환하는 메서드
+	private static int getNextId(Connection con) throws SQLException {
+		String sql = "SELECT MAX(id) FROM member";
+		try(Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(sql)) {
+			if(rs.next() ) {
+				return rs.getInt(1) + 1;		// 최대 ID값에 1을 더한 값을 반환
+			} else {
+				return 1;		// 만약 테이블에 회원이 없는 경우, ID는 1부터 시작한다고 가정
+			}
+		}
+	}
+	
+	// 회원 정보를 삽입하는 메서드
 	@Override
 	public void insertMember(Connection con) throws SQLException {
 		System.out.println("Insert Member");
-		String sql = "INSERT INTO member(pass, name) VALUES (?,?)";
+		String sql = "INSERT INTO member(id, pass, name) VALUES (?, ?, ?)";
+		int id = getNextId(con);
 		System.out.print("pass:");		String pass = sc.next();
 		System.out.print("name:");		String name = sc.next();
 		try(PreparedStatement psmt = con.prepareStatement(sql)) {
-			psmt.setString(1, pass);
-			psmt.setString(2, name);
+			psmt.setInt(1, id);
+			psmt.setString(2, pass);
+			psmt.setString(3, name);
 			int rowsInsert = psmt.executeUpdate();
 			System.out.println(rowsInsert + " Row(s) Inserted.");
 		}
 	}
 
+	// 회원 정보를 업데이트하는 메서드
 	@Override
 	public void updateMember(Connection con) throws SQLException {
 		System.out.println("Update Data");
@@ -71,6 +91,7 @@ public class MemberDaoPrepareStatement extends MemberDao {
 		}
 	}
 
+	// 회원 정보를 삭제하는 메서드
 	@Override
 	public void deleteMember(Connection con) throws SQLException {
 		System.out.println("Delete Data");
@@ -83,6 +104,7 @@ public class MemberDaoPrepareStatement extends MemberDao {
 		}
 	}
 
+	// 회원 정보를 조회 출력
 	@Override
 	public void selectMember(Connection con) throws SQLException {
 		System.out.println("Select Data");
