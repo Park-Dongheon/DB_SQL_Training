@@ -112,6 +112,7 @@ public class MemberDaoPrepareStatement extends MemberDao {
 		System.out.print("id:");		int id = sc.nextInt();
 		try(PreparedStatement psmt = con.prepareStatement(sql);
 			ResultSet rs = psmt.executeQuery()){
+			psmt.setInt(1, id);
 			ResultSetMetaData meta = rs.getMetaData();
 			int count = meta.getColumnCount();
 			while(rs.next()) {
