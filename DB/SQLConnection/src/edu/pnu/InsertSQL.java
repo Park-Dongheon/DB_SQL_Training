@@ -7,12 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-class Member {
+class User {
 	private int id;
 	private String pass;
 	private String name;
 	
-	public Member(int id, String pass, String name) {
+	public User(int id, String pass, String name) {
 		this.id = id;
 		this.pass = pass;
 		this.name = name;
@@ -43,7 +43,6 @@ public class InsertSQL {
 		}
 	}
 	
-	// 회원 정보를 삽입하는 메서드ㄴ
 	private static int getNextId(Connection con) throws SQLException {
 		String selMaxIdSql = "SELECT MAX(id) FROM member";
 		try(PreparedStatement selMaxIdPs = con.prepareStatement(selMaxIdSql);
@@ -56,6 +55,7 @@ public class InsertSQL {
 		}
 	}
 	
+	// 회원 정보를 삽입하는 메서드
 	private static int insertMember(Connection con, Scanner sc) throws SQLException {
 		System.out.println("Insert Data");
 		int id = getNextId(con);
@@ -122,7 +122,7 @@ public class InsertSQL {
 			}
 			
 		}catch (Exception e) {		// 예외 처리
-			System.out.println("연결 실패 : " + e.getMessage());
+			System.out.println("로딩 실패 : " + e.getMessage());
 		}
 	}
 

@@ -1,0 +1,104 @@
+package edu.pnu;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class MemberDaoPrepareStatement extends MemberDao {
+	
+	private static Scanner sc = new Scanner(System.in);
+	
+	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
+	
+	public static void main(String[] args) throws SQLException {
+		MemberDaoStatement dao = new MemberDaoStatement();
+		
+		try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
+			
+			Class.forName(DRIVER);
+			
+			boolean flag = true;
+			while(flag) {
+				System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
+				String s = sc.next().toUpperCase();
+				switch(s) {
+				case "I": dao.insertMember(con);		break;
+				case "U": dao.updateMember(con);		break;
+				case "D": dao.deleteMember(con);		break;
+				case "S": dao.selectMember(con);		break;
+				case "X": flag = false;					break;
+				}
+			}
+			System.out.println("Bye~");
+			
+		} catch (Exception e) {
+			System.out.println("로딩 실패 : " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void insertMember(Connection con) throws SQLException {
+		System.out.println("Insert Member");
+		String sql = "INSERT INTO member(pass, name) VALUES (?,?)";
+		System.out.print("pass:");		String pass = sc.next();
+		System.out.print("name:");		String name = sc.next();
+		try(PreparedStatement psmt = con.prepareStatement(sql)) {
+			psmt.setString(1, pass);
+			psmt.setString(2, name);
+			int rowsInsert = psmt.executeUpdate();
+			System.out.println(rowsInsert + " Row(s) Inserted.");
+		}
+	}
+
+	@Override
+	public void updateMember(Connection con) throws SQLException {
+		System.out.println("Update Data");
+		String sql = "UPDATE member SET pass=?, name=? WHERE id=?";
+		System.out.print("id:");		int id = sc.nextInt();
+		System.out.print("pass:");		String pass = sc.next();
+		System.out.print("name:");		String name = sc.next();
+		try(PreparedStatement psmt = con.prepareStatement(sql)) {
+			psmt.setString(1, pass);
+			psmt.setString(2, name);
+			psmt.setInt(3, id);
+			int rowsUpdate = psmt.executeUpdate();
+			System.out.println(rowsUpdate + " Row(s) Updated");
+		}
+	}
+
+	@Override
+	public void deleteMember(Connection con) throws SQLException {
+		System.out.println("Delete Data");
+		String sql = "DELETE FROM member WHERE id=?";
+		System.out.print("id:");		int id = sc.nextInt();
+		try(PreparedStatement psmt = con.prepareStatement(sql)) {
+			psmt.setInt(1, id);
+			int rowsDelete = psmt.executeUpdate();
+			System.out.println(rowsDelete + " Row(s) Deleted");
+		}
+	}
+
+	@Override
+	public void selectMember(Connection con) throws SQLException {
+		System.out.println("Select Data");
+		String sql = "SELECT * FROM member WHERE id>?";
+		System.out.print("id:");		int id = sc.nextInt();
+		try(PreparedStatement psmt = con.prepareStatement();
+			ResultSet rs = stmt.executeQuery()){
+			ResultSetMetaData meta = rs.getMetaData();
+			int count = meta.getColumnCount();
+			while(rs.next()) {
+				for(int i = 1; i <= count; i++) {
+					System.out.print(rs.getString(i) + ((i == count) ? "" : ","));
+				}
+				System.out.println();
+			}
+		}		
+	}
+	
+}

@@ -1,0 +1,127 @@
+package edu.pnu;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+abstract class MemberDao {
+	
+	private static String URL = "jdbc:mysql://localhost:3306/musthave";
+	private static String USER = "scott";
+	private static String PASS = "tiger";
+	
+	
+	public abstract void insertMember(Connection con) throws SQLException;
+	public abstract void updateMember(Connection con) throws SQLException;
+	public abstract void deleteMember(Connection con) throws SQLException;
+	public abstract void selectMember(Connection con) throws SQLException;
+	
+	public static String getURL() {
+		return URL;
+	}
+	public static void setURL(String uRL) {
+		URL = uRL;
+	}
+	public static String getUSER() {
+		return USER;
+	}
+	public static void setUSER(String uSER) {
+		USER = uSER;
+	}
+	public static String getPASS() {
+		return PASS;
+	}
+	public static void setPASS(String pASS) {
+		PASS = pASS;
+	}
+	
+	
+}
+
+public class MemberDao_Statement extends MemberDao{
+	
+	private static Scanner sc = new Scanner(System.in);
+	
+	private static String DRIVER = "com.mysql.cj.jdbc.Driver";
+	
+	public static void main(String[] args) throws SQLException {
+		MemberDao_Statement dao = new MemberDao_Statement();
+		
+		try(Connection con = DriverManager.getConnection(getURL(), getUSER(), getPASS())) {
+			
+			Class.forName(DRIVER);
+			
+			boolean flag = true;
+			while(flag) {
+				System.out.print("[I]nsert/[U]pdate/[D]elete/[S]elect/e[X]it: ");
+				String s = sc.next().toUpperCase();
+				switch(s) {
+				case "I": dao.insertMember(con);		break;
+				case "U": dao.updateMember(con);		break;
+				case "D": dao.deleteMember(con);		break;
+				case "S": dao.selectMember(con);		break;
+				case "X": flag = false;					break;
+				}
+			}
+			System.out.println("Bye~");
+			
+		} catch (Exception e) {
+			System.out.println("로딩 실패 : " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void insertMember(Connection con) throws SQLException {
+		System.out.println("Insert Member");
+		String sql = "INSERT INTO member(pass, name) VALUES ('%s', '%s')";
+		String pass = sc.next();
+		String name = sc.next();
+		String formatString = String.format(sql, pass, name);
+		try(Statement stmt = con.createStatement()) {
+			int rowsInsert = stmt.executeUpdate(formatString);
+			System.out.println(rowsInsert + " Row(s) Inserted.");
+		}
+	}
+
+	@Override
+	public void updateMember(Connection con) throws SQLException {
+		System.out.println("Update Data");
+		String sql = "UPDATE member SET pass='%s', name='%s' WHERE id=%d";
+		int id = sc.nextInt();
+		String pass = sc.next();
+		String name = sc.next();
+		String formatString = String.format(sql, pass, name, id);
+		try(Statement stmt = con.createStatement()) {
+			int rowsUpdate = stmt.executeUpdate(formatString);
+			System.out.println(rowsUpdate + " Row(s) Updated");
+		}
+	}
+
+	@Override
+	public void deleteMember(Connection con) throws SQLException {
+		System.out.println("Delete Data");
+		String sql = "DELETE FROM member WHERE id=%d";
+		int id = sc.nextInt();
+		String formatString = String.format(sql, id);
+		try(Statement stmt = con.createStatement()) {
+			int rowsDelete = stmt.executeUpdate(formatString);
+			System.out.println(rowsDelete + " Row(s) Deleted");
+		}
+	}
+
+	@Override
+	public void selectMember(Connection con) throws SQLException {
+		System.out.println("Select Data");
+		String sql = "SELECT * FROM member WHERE id>%d";
+		int id = sc.nextInt();
+		String formatString = String.format(sql, id);
+		try(Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(formatString)){
+			
+		}
+		
+	}
+	
+}

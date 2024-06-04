@@ -1,1 +1,5 @@
 1717377871760	Copy compilation unit
+1717465079302	Encapsulate field 'URL'
+1717465119913	Encapsulate field 'USER'
+1717465127145	Encapsulate field 'PASS'
+1717465800352	Delete element
