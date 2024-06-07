@@ -1,0 +1,33 @@
+USE org;
+
+SELECT DNO
+
+FROM DEPT
+
+WHERE DNAME = 'Marketing';
+
+
+SELECT e.ENO, e.ENAME, e.DNO, e.SALARY 
+
+FROM EMP e
+
+WHERE e.DNO = 'D1';
+
+
+SELECT e.ENO, e.ENAME, D.DNAME, e.SALARY 
+
+FROM EMP e, DEPT d
+
+WHERE E.DNO = D.DNO 
+
+AND D.DNAME = 'Marketing';
+
+
+
+SELECT e.ENO, e.ENAME, D.DNAME, e.SALARY 
+
+FROM EMP e, DEPT d
+
+WHERE E.DNO = D.DNO 
+
+AND D.BUDGET >= 10000000;

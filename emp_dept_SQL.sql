@@ -1,0 +1,15 @@
+USE ktrain;
+
+CREATE TABLE dept (
+    dno CHAR(2) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    dname VARCHAR(45) NOT NULL,
+    budget BIGINT
+);
+
+CREATE TABLE emp (
+    eno CHAR(2) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    ename VARCHAR(45) NOT NULL,
+    dno CHAR(2) NOT NULL,
+    salary BIGINT DEFAULT 0,
+    FOREIGN KEY (dno) REFERENCES dept(dno)
+);
