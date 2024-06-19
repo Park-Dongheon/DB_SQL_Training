@@ -129,6 +129,10 @@ SELECT DISTINCT s.sname FROM s
 WHERE EXISTS (SELECT * FROM sp WHERE sp.sno = s.sno AND sp.pno = 'P2');
 -- exists(select from )의 tuple calculus의 exists에 해당한다. sp가 bound variable이다.
 
+SELECT s.sname
+FROM s
+WHERE EXISTS (SELECT sp.sno FROM sp WHERE sp.sno = s.sno AND sp.pno = 'P2');
+
 # 14. 부품 p2를 공급하지 않는 공급자의 이름을 찾아라.
 SELECT DISTINCT s.sname FROM s
 WHERE NOT EXISTS (SELECT * FROM sp WHERE sp.sno = s.sno AND sp.pno = 'P2');
@@ -136,8 +140,12 @@ WHERE NOT EXISTS (SELECT * FROM sp WHERE sp.sno = s.sno AND sp.pno = 'P2');
 SELECT DISTINCT s.sname FROM s
 WHERE s.sno NOT IN (SELECT sp.sno FROM sp WHERE sp.pno = 'P2');
 
+SELECT sno, sname
+FROM s
+WHERE sno NOT IN (SELECT sno FROM sp WHERE sp.sno = s.sno AND sp.pno = 'p2');
+
 # 15. 모든 부품을 공급하는 공급자의 이름을 찾아라.
-SELECT DISTINCT s.sname
+SELECT DISTINCT s.sno, s.sname
 FROM s
 WHERE NOT EXISTS (
 	SELECT *
@@ -146,3 +154,74 @@ WHERE NOT EXISTS (
 		SELECT *
         FROM sp
         WHERE sp.sno = s.sno AND sp.pno = p.pno));
+        
+SELECT DISTINCT s.sno, s.sname
+FROM s
+WHERE NOT EXISTS (
+	SELECT pno
+    FROM p
+    WHERE NOT EXISTS (
+		SELECT pno
+        FROM sp
+        WHERE sp.sno = s.sno AND sp.pno = p.pno));
+        
+# 16. 
+SELECT COUNT(*) FROM p;
+SELECT sno, COUNT(*) cnt
+FROM sp
+GROUP BY sno
+HAVING cnt = (SELECT COUNT(*) FROM p);
+
+# 17.
+# p.119 / SET (1, 1, 2, 3) --> (1, 2, 3)
+SELECT pno
+FROM p
+WHERE weight >= 16
+UNION
+SELECT pno
+FROM sp
+WHERE sno = 'S2'; 
+
+-- 더미 테이블 튜플의 복제 SELECT CASE WHEN no = 1 THEN xxx FROM (SELECT 1 AS no UNION SELECT 2 UNION SELECT 3) A, P;
+
+# 18.
+SELECT pno, weight
+FROM p
+WHERE weight * 454 >= 10000;
+
+# 19.
+SELECT pno
+FROM sp
+GROUP BY pno;
+
+# 20.
+SELECT sno, status
+FROM s
+WHERE city = 'Paris'
+ORDER BY sno, status DESC;
+
+# 21.
+SELECT pno
+FROM p
+WHERE 16 < weight AND weight < 19;
+
+# 22.
+SELECT SUM(qty)
+FROM sp
+WHERE pno = 'P2';
+
+# 23.
+SELECT pno
+FROM p
+WHERE EXISTS( SELECT sno FROM sp WHERE sp.pno = p.pno);
+
+# 24.
+SELECT *
+FROM sp
+WHERE qty >= 300;
+
+
+# 25.
+
+
+
